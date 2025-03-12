@@ -1,62 +1,27 @@
-=== WooCommerce Custom Payment Gateway (SecPaid Extension) ===
-Contributors: waseem_senjer,wprubyplugins,Ala Eddin Eltai
-Donate link: https://wpruby.com/plugin/woocommerce-custom-payment-gateway-pro/
-Tags: SecPaid Woocommerce Plugin, woocommerce,payment gateway, woocommerce extension, other payment, custom payment
-Requires at least: 4.0
-Tested up to: 6.7
-Stable tag: 1.4.0
-Requires PHP: 7.0
-WC requires at least: 3.0
-WC tested up to: 9.4
-Requires Plugins: woocommerce
-License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+# WooCommerce SecPaid Payment Gateway
 
-Do not miss a single sale! This plugin is very useful to catch every possible sale.
+![SecPaid Logo](https://secpaid.com/wp-content/uploads/2023/05/secpaid-logo.png)
 
+SecPaid offers a variety of Payment Providers for your WooCommerce store. This plugin is easy to setup, integrate, and use - making it the best solution for your online store.
 
-== Description ==
-SecPaid offers a variete of Payment Providers.
-It is easy to setup, integrate and use. It is the best solution for your online store.
+## Features
 
+- **Multiple Payment Providers**: Access a wide range of payment options through a single integration
+- **Easy Setup**: Simple configuration process to get you accepting payments quickly
+- **Secure Transactions**: Industry-standard security protocols to protect your customers' data
+- **Customizable Checkout**: Tailor the payment experience to match your brand
+- **Detailed Transaction Reporting**: Track all payments through an intuitive dashboard
 
-### Customer Message
-A gateway description appears to the customer at the Checkout page to provide him with additional information about your custom gateway.
+## Installation
 
-### Customer Note
-A note for the customer for further instructions displayed after the checkout process.
-
-
-### Debugging Mode
-The debug mode is an excellent tool to test out the plugin’s settings and the checkout page as the payment gateway will be only activated for you if the Debug Mode is enabled.
-
-
-
-
-
-
-== Screenshots ==
-
-1. Checkout Page Preview.
-2. Payment Gateway Settings Page.
-3. Order Notes.
-
-
-
-
-
-== Installation ==
-
-
-
-= Using The WordPress Dashboard =
+### Using The WordPress Dashboard
 
 1. Navigate to the 'Add New' in the plugins dashboard
-2. Search for 'WooCommerce Other Payment Gateway'
+2. Search for 'SecPaid Woocommerce Plugin'
 3. Click 'Install Now'
 4. Activate the plugin on the Plugin dashboard
 
-= Uploading in WordPress Dashboard =
+### Uploading in WordPress Dashboard
 
 1. Navigate to the 'Add New' in the plugins dashboard
 2. Navigate to the 'Upload' area
@@ -64,100 +29,77 @@ The debug mode is an excellent tool to test out the plugin’s settings and the 
 4. Click 'Install Now'
 5. Activate the plugin in the Plugin dashboard
 
-= Using FTP =
+### Using FTP
 
 1. Download `SecPaid-Woocommerce-Plugin.zip`
 2. Extract the `SecPaid-Woocommerce-Plugin` directory to your computer
 3. Upload the `SecPaid-Woocommerce-Plugin` directory to the `/wp-content/plugins/` directory
 4. Activate the plugin in the Plugin dashboard
 
-== Changelog ==
+## SecPaid Setup
 
-= 1.5.0 =
+To start accepting payments with SecPaid, follow these steps:
+
+1. **Create a SecPaid Account**: Visit [SecPaid.com](https://secpaid.com) and sign up for an account
+2. **Login to Your Dashboard**: Access your merchant dashboard at [dashboard.secpaid.com](https://dashboard.secpaid.com)
+3. **Retrieve Your API Key**: Navigate to Settings → API Keys and copy your API key
+4. **Set Your Callback URL**: Configure your callback URL in the SecPaid dashboard to: `https://your-site.com/wc-api/SecPaid/`
+5. **Configure Payment Endpoint**: Set your payment endpoint to receive transaction notifications
+
+> **Important**: Keep your API keys secure and never share them publicly!
+
+## Configuration
+
+1. Go to WooCommerce → Settings → Payments
+2. Click on "SecPaid" to configure the payment gateway
+3. Enable the payment method and enter your API credentials
+4. Customize the payment gateway title and description that customers will see at checkout
+5. Save your changes
+
+## Customer Experience
+
+### Customer Message
+A gateway description appears to the customer at the Checkout page to provide additional information about the SecPaid payment gateway.
+
+### Customer Note
+A note for the customer with further instructions displayed after the checkout process.
+
+## Debugging Mode
+
+The debug mode is an excellent tool to test the plugin's settings and checkout process. When enabled, the payment gateway will only be activated for administrators, allowing you to test the payment flow without affecting regular customers.
+
+## Screenshots
+
+![Checkout Page Preview](https://secpaid.com/wp-content/uploads/2023/05/checkout-preview.png)
+
+![Payment Gateway Settings Page](https://secpaid.com/wp-content/uploads/2023/05/settings-page.png)
+
+![Order Notes](https://secpaid.com/wp-content/uploads/2023/05/order-notes.png)
+
+## Changelog
+
+### 1.5.0
 * Forked: SecPaid Forked from WooCommerce Custom Payment Gateway (Other Payment Gateway) by WPRuby
 
+### 1.4.0
+* Added: WooCommerce Checkout Blocks support
+* Fixed: Validation of payment textarea was required even if the textarea is hidden
 
-= 1.4.0 =
-* Added: WooCommerce Checkout Blocks support.
-* Fixed: Validation of payment textarea was required even if the textarea is hidden.
+### 1.3.11
+* Added: WordPress 6.7 compatibility
 
-= 1.3.11 =
-* Added: WordPress 6.7 compatibility.
+### 1.3.10
+* Fixed: PHP deprecation notice
+* Added: WordPress 6.6 compatibility
+* Added: WooCommerce 9.1 compatibility
 
-= 1.3.10 =
-* Fixed: PHP deprecation notice.
-* Added: WordPress 6.6 compatibility.
-* Added: WooCommerce 9.1 compatibility.
+*See full changelog in plugin documentation*
 
-= 1.3.9 =
-* Added: WordPress 6.4 compatibility.
-* Added: WooCommerce 8.4 compatibility.
+## Support
 
-= 1.3.8 =
-* Declaring support for WooCommerce High-Performance Order Storage
+For questions or support, please contact our team at support@secpaid.com or visit our [support portal](https://support.secpaid.com).
 
-= 1.3.7 =
-* Fixed: Customer receive order note email.
+## License
 
-= 1.3.6 =
-* Added: WordPress 6.0 compatibility.
-* Added: WooCommerce 7.0 compatibility.
-
-= 1.3.5 =
-* Added: WordPress 5.9 compatibility.
-
-= 1.3.4 =
-* FIXED: remove red Astrix on checkout when the field is not required.
-
-= 1.3.3 =
-* FIXED: The settings page widgets were broken after WP 5.5
-
-= 1.3.2 =
-* FIXED: show the customer note if the textarea field is hidded.
-
-= 1.3.1 =
-* FIXED: The validation of the textarea field.
-
-= 1.3.0 =
-* ADDED: The ability to hide the textarea field at checkout.
-
-= 1.2.0 =
-* ADDED: Now, you can select the default order status after the customer checkout.
-
-= 1.2.0 =
-* ADDED: Now, you can select the default order status after the customer checkout.
-
-= 1.1.0 =
-* ADDED: Allow HTML in the description of the payment method
-
-= 1.0.7 =
-* FIXED: add support for WordPress Multisite
-
-= 1.0.6 =
-* ADDED: option to hide the payment form
-* FIXED: replace deprecated WC functions.
-
-
-= 1.0.5 =
-* FIXED: remove PHP warning.
-
-
-= 1.0.4 =
-* FIXED: don't send a note when the user's note is empty.
-
-= 1.0.3 =
-* Re-Branding
-
-= 1.0.2 =
-* UI enhancements.
-* Adding the Pro version promotion.
-
-= 1.0.1 =
-* Add i18n support.
-* Add Croatian language translation (Thanks to Sanjin Barac)
-
-= 1.0 =
-* Initial release.
-
-== Upgrade Notice ==
-* Initial release.
+This plugin is licensed under GPLv2 or later.
+[License URI](http://www.gnu.org/licenses/gpl-2.0.html)
