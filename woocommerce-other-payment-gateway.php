@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name: WooCommerce Custom Payment Gateway
- * Plugin URI: https://secpaid.com
- * Description: SecPaid Payment Gateway for WooCommerce
+ * Plugin URI: https://wpruby.com
+ * Description: Custom Payment Gateway for WooCommerce with SecPaid integration
  * Version: 1.0
- * Author: WPRuby, Ala Eddin Eltai
- * Author URI: https://secpaid.com, https://wpruby.com
+ * Author: WPRuby
+ * Author URI: https://wpruby.com
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
