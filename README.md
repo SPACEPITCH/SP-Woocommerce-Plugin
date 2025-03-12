@@ -77,7 +77,9 @@ The debug mode is an excellent tool to test the plugin's settings and checkout p
 ## Screenshots
 
 <img width="554" alt="Screenshot 2025-03-12 at 20 17 17" src="https://github.com/user-attachments/assets/c6a7b522-ef69-4959-a08e-fbd736aa05b6" />
-
+<img width="1417" alt="Screenshot 2025-03-12 at 20 28 17" src="https://github.com/user-attachments/assets/3ea9c910-d1ed-4caa-b721-e1471b4a9546" />
+<img width="1230" alt="Screenshot 2025-03-12 at 20 28 31" src="https://github.com/user-attachments/assets/c866cd6f-c364-4ed0-a69c-1c26c76b3ce1" />
+<img width="1031" alt="Screenshot 2025-03-12 at 20 29 01" src="https://github.com/user-attachments/assets/6096ea32-d621-46f8-af95-7eae55fa3316" />
 
 ## Changelog
 
