@@ -1,6 +1,7 @@
 # WooCommerce SecPaid Payment Gateway
 
-![SecPaid Logo](https://secpaid.com/wp-content/uploads/2023/05/secpaid-logo.png)
+<img width="147" alt="Screenshot 2025-03-12 at 20 17 51" src="https://github.com/user-attachments/assets/65c7fa74-e0d5-43f3-b7e3-10989d036225" />
+
 
 SecPaid offers a variety of Payment Providers for your WooCommerce store. This plugin is easy to setup, integrate, and use - making it the best solution for your online store.
 
@@ -47,6 +48,7 @@ To start accepting payments with SecPaid, follow these steps:
 5. **Configure Payment Endpoint**: Set your payment endpoint to receive transaction notifications
 
 > **Important**: Keep your API keys secure and never share them publicly!
+<img width="623" alt="Screenshot 2025-03-12 at 20 17 44" src="https://github.com/user-attachments/assets/78e17f71-13f4-44ee-b1c5-2fc7942924f2" />
 
 ## Configuration
 
@@ -63,12 +65,14 @@ A gateway description appears to the customer at the Checkout page to provide ad
 
 ### Customer Note
 A note for the customer with further instructions displayed after the checkout process.
+<img width="1117" alt="Screenshot 2025-03-12 at 20 16 59" src="https://github.com/user-attachments/assets/2625d39e-0277-4d15-935f-52c7f45c207c" />
 
 ## Debugging Mode
 
 The debug mode is an excellent tool to test the plugin's settings and checkout process. When enabled, the payment gateway will only be activated for administrators, allowing you to test the payment flow without affecting regular customers.
 
 ## Screenshots
+<img width="554" alt="Screenshot 2025-03-12 at 20 17 17" src="https://github.com/user-attachments/assets/c6a7b522-ef69-4959-a08e-fbd736aa05b6" />
 
 ![Checkout Page Preview](https://secpaid.com/wp-content/uploads/2023/05/checkout-preview.png)
 
