@@ -16,10 +16,9 @@ Do not miss a single sale! This plugin is very useful to catch every possible sa
 
 
 == Description ==
-If the customer can't pay with your payment gateways, give him the opportunity to submit the order and send to you a note on payment options he can pay you with. The plugin is very simple and effective. The more important is it's very easy to setup and use.
+SecPaid offers a variete of Payment Providers.
+It is easy to setup, integrate and use. It is the best solution for your online store.
 
- [Upgrade to Pro Now](https://wpruby.com/plugin/woocommerce-custom-payment-gateway-pro/?utm_source=custom-payment-lite&utm_medium=readme&utm_campaign=freetopro "Upgrade to Pro")
- [Documentation](https://wpruby.com/knowledgebase_category/woocommerce-custom-payment-gateway-pro/?utm_source=custom-payment-lite&utm_medium=readme&utm_campaign=freetopro "Documentation")
 
 ### Customer Message
 A gateway description appears to the customer at the Checkout page to provide him with additional information about your custom gateway.
@@ -27,60 +26,6 @@ A gateway description appears to the customer at the Checkout page to provide hi
 ### Customer Note
 A note for the customer for further instructions displayed after the checkout process.
 
-
-= Pro Features =
-
-### Full Form Builder
-A rich, dynamic and a drag-n-drop form builder to help you as much as possible to customize your gateway form. The form builder supports the following fields:
-
-    * Text
-    * Text Box
-    * Checkbox
-    * Radio Buttons
-    * Select Menu
-    * Email
-    * Date
-    * Time
-    * URL
-    * Currency
-    * Number
-    * Phone number
-    * Credit Card Form
-    * Instructions
-
-
-All fields are highly customizable as you can change the name, label, size, default value, CSS class/es, and more.
-
-### Unlimited Custom Gateways
-Not only you can use the already created gateway, you can create an unlimited number of custom payment gateways and have full control of them.
-### Custom Gateway Icon
-You can differentiate your gateway with a special icon which will be displayed on the Checkout page.
-### Order Status after Checkout
-You can configure the status of the orders that were paid using your custom payment gateway.
-### API Request after Checkout
-A very powerful tool for allowing the payment information to be sent to an external API in order to process or store the payment information.
-* You can redirect the customer to a custom URL after the checkout.
-* Set the type of the API request, either POST or GET.
-* Set the type of the data of the request, either FORM DATA or JSON.
-* Setting any Extra API parameters such as API keys .. etc
-* Setting API parameters and Key/Value combination of WooCommerce data such as:
-
-    * Order ID
-    * Order Total
-    * Customer First Name
-    * Customer Last Name
-    * Customer Postcode
-    * Customer City
-    * Customer State
-    * Customer Country
-    * Customer Email
-    * Customer Phone
-    * Customer IP Address>
-
-
-
-### Adding Payment information to the Order’s email
-An option is available to add the submitted payment information in the Order’s emails.
 
 ### Debugging Mode
 The debug mode is an excellent tool to test out the plugin’s settings and the checkout page as the payment gateway will be only activated for you if the Debug Mode is enabled.
@@ -127,6 +72,11 @@ The debug mode is an excellent tool to test out the plugin’s settings and the 
 4. Activate the plugin in the Plugin dashboard
 
 == Changelog ==
+
+= 1.5.0 =
+* Forked: SecPaid Forked from WooCommerce Custom Payment Gateway (Other Payment Gateway) by WPRuby
+
+
 = 1.4.0 =
 * Added: WooCommerce Checkout Blocks support.
 * Fixed: Validation of payment textarea was required even if the textarea is hidden.
