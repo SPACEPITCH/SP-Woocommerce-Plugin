@@ -1,5 +1,7 @@
 # WooCommerce SecPaid Payment Gateway
 
+
+
 <img width="147" alt="Screenshot 2025-03-12 at 20 17 51" src="https://github.com/user-attachments/assets/65c7fa74-e0d5-43f3-b7e3-10989d036225" />
 
 
@@ -15,12 +17,6 @@ SecPaid offers a variety of Payment Providers for your WooCommerce store. This p
 
 ## Installation
 
-### Using The WordPress Dashboard
-
-1. Navigate to the 'Add New' in the plugins dashboard
-2. Search for 'SecPaid Woocommerce Plugin'
-3. Click 'Install Now'
-4. Activate the plugin on the Plugin dashboard
 
 ### Uploading in WordPress Dashboard
 
@@ -29,6 +25,9 @@ SecPaid offers a variety of Payment Providers for your WooCommerce store. This p
 3. Select `SecPaid-Woocommerce-Plugin.zip` from your computer
 4. Click 'Install Now'
 5. Activate the plugin in the Plugin dashboard
+
+<img width="477" alt="Screenshot 2025-03-12 at 20 20 22" src="https://github.com/user-attachments/assets/444485da-877a-4dd8-b7d6-1b7945e0fedb" />
+
 
 ### Using FTP
 
@@ -41,11 +40,11 @@ SecPaid offers a variety of Payment Providers for your WooCommerce store. This p
 
 To start accepting payments with SecPaid, follow these steps:
 
-1. **Create a SecPaid Account**: Visit [SecPaid.com](https://secpaid.com) and sign up for an account
-2. **Login to Your Dashboard**: Access your merchant dashboard at [dashboard.secpaid.com](https://dashboard.secpaid.com)
+1. **Create a SecPaid Account**: Visit [SecPaid.com](https://app.secpaid.com) and sign up for an account
+2. **Login to Your Dashboard**: Access your merchant dashboard at [app.secpaid.com/settings](https://app.secpaid.com)
 3. **Retrieve Your API Key**: Navigate to Settings → API Keys and copy your API key
-4. **Set Your Callback URL**: Configure your callback URL in the SecPaid dashboard to: `https://your-site.com/wc-api/SecPaid/`
-5. **Configure Payment Endpoint**: Set your payment endpoint to receive transaction notifications
+4. **Set Your Callback URL**: Configure your callback URL in the SecPaid dashboard to: https://your-webshop.com/wc-api/secpaid-callback
+5. **Configure Payment Endpoint**: Set your payment endpoint to receive transaction notifications: https://your-webshop.com/wp-json/secpaid/v1/webhook
 
 > **Important**: Keep your API keys secure and never share them publicly!
 <img width="623" alt="Screenshot 2025-03-12 at 20 17 44" src="https://github.com/user-attachments/assets/78e17f71-13f4-44ee-b1c5-2fc7942924f2" />
@@ -54,11 +53,15 @@ To start accepting payments with SecPaid, follow these steps:
 
 1. Go to WooCommerce → Settings → Payments
 2. Click on "SecPaid" to configure the payment gateway
-3. Enable the payment method and enter your API credentials
-4. Customize the payment gateway title and description that customers will see at checkout
-5. Save your changes
+3. Select the Type of Endpoint you want to choose for your payments (Splits, Basic)
+4. Enable the payment method and enter your API credentials
+5. Customize the payment gateway title and description that customers will see at checkout (You can for example add/delete payment options after contacitung the SecPaid Team.
+6. Save your changes
 
-## Customer Experience
+<img width="1302" alt="Screenshot 2025-03-12 at 20 21 08" src="https://github.com/user-attachments/assets/6199ae4d-1f65-4f6e-897f-d84c066be391" />
+
+
+## Custom Editing
 
 ### Customer Message
 A gateway description appears to the customer at the Checkout page to provide additional information about the SecPaid payment gateway.
@@ -72,13 +75,9 @@ A note for the customer with further instructions displayed after the checkout p
 The debug mode is an excellent tool to test the plugin's settings and checkout process. When enabled, the payment gateway will only be activated for administrators, allowing you to test the payment flow without affecting regular customers.
 
 ## Screenshots
+
 <img width="554" alt="Screenshot 2025-03-12 at 20 17 17" src="https://github.com/user-attachments/assets/c6a7b522-ef69-4959-a08e-fbd736aa05b6" />
 
-![Checkout Page Preview](https://secpaid.com/wp-content/uploads/2023/05/checkout-preview.png)
-
-![Payment Gateway Settings Page](https://secpaid.com/wp-content/uploads/2023/05/settings-page.png)
-
-![Order Notes](https://secpaid.com/wp-content/uploads/2023/05/order-notes.png)
 
 ## Changelog
 
