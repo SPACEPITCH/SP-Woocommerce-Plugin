@@ -10,12 +10,12 @@
  * Contributors: waseem_senjer,wprubyplugins,Ala Eddin Eltai
  * Author URI: https://secpaid.com, https://wpruby.com
  * Tags: SecPaid Woocommerce Plugin, woocommerce,payment gateway, woocommerce extension, other payment, custom payment
- * Requires at least: 4.0
- * Tested up to: 6.7
+ * Requires at least: Wordpress 4.0
+ * Tested up to: Wordpress 6.7
  * Stable tag: 1.0.0
  * Requires PHP: >7.0
- * WC requires at least: 3.0
- * WC tested up to: 9.4
+ * Woocommerce requires at least: 3.0
+ * Woocommerce tested up to: 9.4
  * Requires Plugins: woocommerce
  * License: GPLv2 or later
  */
