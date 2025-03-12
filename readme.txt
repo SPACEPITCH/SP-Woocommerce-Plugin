@@ -1,7 +1,7 @@
-=== WooCommerce Custom Payment Gateway ===
-Contributors: waseem_senjer,wprubyplugins
+=== WooCommerce Custom Payment Gateway (SecPaid Extension) ===
+Contributors: waseem_senjer,wprubyplugins,Ala Eddin Eltai
 Donate link: https://wpruby.com/plugin/woocommerce-custom-payment-gateway-pro/
-Tags: woocommerce,payment gateway, woocommerce extension, other payment, custom payment
+Tags: SecPaid Woocommerce Plugin, woocommerce,payment gateway, woocommerce extension, other payment, custom payment
 Requires at least: 4.0
 Tested up to: 6.7
 Stable tag: 1.4.0
@@ -115,15 +115,15 @@ The debug mode is an excellent tool to test out the plugin’s settings and the 
 
 1. Navigate to the 'Add New' in the plugins dashboard
 2. Navigate to the 'Upload' area
-3. Select `woocommerce-other-payment-gateway.zip` from your computer
+3. Select `SecPaid-Woocommerce-Plugin.zip` from your computer
 4. Click 'Install Now'
 5. Activate the plugin in the Plugin dashboard
 
 = Using FTP =
 
-1. Download `woocommerce-other-payment-gateway.zip`
-2. Extract the `woocommerce-other-payment-gateway` directory to your computer
-3. Upload the `woocommerce-other-payment-gateway` directory to the `/wp-content/plugins/` directory
+1. Download `SecPaid-Woocommerce-Plugin.zip`
+2. Extract the `SecPaid-Woocommerce-Plugin` directory to your computer
+3. Upload the `SecPaid-Woocommerce-Plugin` directory to the `/wp-content/plugins/` directory
 4. Activate the plugin in the Plugin dashboard
 
 == Changelog ==
