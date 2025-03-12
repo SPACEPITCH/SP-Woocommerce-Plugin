@@ -1,5 +1,7 @@
 # WooCommerce SecPaid Payment Gateway
 
+<img width="170" alt="Screenshot 2025-03-12 at 20 17 51" src="https://github.com/user-attachments/assets/65c7fa74-e0d5-43f3-b7e3-10989d036225" />
+
 /**
  * Plugin Name: SecPaid-Woocommerce-Plugin
  * Plugin URI: https://secpaid.com
@@ -20,7 +22,6 @@
 
 ![168959749](https://github.com/user-attachments/assets/5174d5ce-7ed9-4181-8158-13f8cee4d806)
 
-<img width="170" alt="Screenshot 2025-03-12 at 20 17 51" src="https://github.com/user-attachments/assets/65c7fa74-e0d5-43f3-b7e3-10989d036225" />
 
 
 SecPaid offers a variety of Payment Providers for your WooCommerce store. This plugin is easy to setup, integrate, and use - making it the best solution for your online store.
