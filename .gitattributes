@@ -1,8 +1,0 @@
-.idea export-ignore
-blocks/src export-ignore
-blocks/package.json export-ignore
-blocks/package-lock.json export-ignore
-.gitattributes export-ignore
-.DS_Store export-ignore
-Makefile export-ignore
-.gitignore export-ignore
