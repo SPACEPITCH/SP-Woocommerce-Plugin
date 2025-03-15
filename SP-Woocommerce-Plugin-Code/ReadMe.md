@@ -1,7 +1,9 @@
-##SecPaid WooCommerce Payment Gateway
+## SecPaid WooCommerce Payment Gateway Source Code
 
-Contributors: ala_eddin_eltai, secpaid_ltd
-Tags: woocommerce, payment gateway, woocommerce extension, secpaid, secure payments
+- Contributors: ala_eddin_eltai, secpaid_ltd
+
+- Tags: woocommerce, payment gateway, woocommerce extension, secpaid, secure payments
+
 Requires at least: 4.0
 Tested up to: 6.7
 Stable tag: 1.4.0
