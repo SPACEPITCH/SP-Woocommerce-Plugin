@@ -2,7 +2,7 @@
 /**
  * Plugin Name: SecPaid WooCommerce Payment Gateway
  * Description: Secure payment processing with SecPaid for WooCommerce
- * Version: 2.1.0
+ * Version: 2.0
  * Author: SecPaid Team
  * Text Domain: woocommerce-secpaid-payment-gateway
  */
@@ -19,7 +19,23 @@ if(secpaid_is_woocommerce_active()){
 
 	add_action('plugins_loaded', 'init_secpaid_payment_gateway');
 	function init_secpaid_payment_gateway(){
-		require 'class-woocommerce-secpaid-payment-gateway.php';
+		// Get the plugin directory path
+		$plugin_dir = plugin_dir_path(__FILE__);
+		
+		// Check if the original file exists (for backward compatibility)
+		if (file_exists($plugin_dir . 'class-woocommerce-other-payment-gateway.php')) {
+			require $plugin_dir . 'class-woocommerce-other-payment-gateway.php';
+		} 
+		// Check if our renamed file exists
+		elseif (file_exists($plugin_dir . 'class-woocommerce-secpaid-payment-gateway.php')) {
+			require $plugin_dir . 'class-woocommerce-secpaid-payment-gateway.php';
+		}
+		// If neither file exists, output an admin notice
+		else {
+			add_action('admin_notices', function() {
+				echo '<div class="error"><p>SecPaid Payment Gateway: Required gateway class file is missing. Please reinstall the plugin.</p></div>';
+			});
+		}
 	}
 
 	add_action( 'plugins_loaded', 'secpaid_payment_load_plugin_textdomain' );
