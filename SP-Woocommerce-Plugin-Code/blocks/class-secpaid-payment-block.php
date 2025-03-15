@@ -40,20 +40,12 @@ final class SecPaid_Payment_Block extends AbstractPaymentMethodType {
      * @return string[]
      */
     public function get_payment_method_script_handles() {
-        $asset_path   = plugin_dir_path( __DIR__ ) . 'blocks/build/index.asset.php';
-        $version      = null;
-        $dependencies = array();
-        if( file_exists( $asset_path ) ) {
-            $asset        = require $asset_path;
-            $version      = isset( $asset[ 'version' ] ) ? $asset[ 'version' ] : $version;
-            $dependencies = isset( $asset[ 'dependencies' ] ) ? $asset[ 'dependencies' ] : $dependencies;
-        }
-
+        // Simple implementation that doesn't require build files
         wp_register_script(
             'wc-secpaid-payment-integration',
-            plugin_dir_url( __DIR__ ) . 'blocks/build/index.js',
-            $dependencies,
-            $version,
+            plugins_url('js/secpaid-payment-block.js', dirname(__FILE__)),
+            array('wp-element', 'wp-components', 'wp-blocks', 'wp-i18n', 'wc-blocks-registry'),
+            '1.0.0',
             true
         );
 
@@ -67,10 +59,8 @@ final class SecPaid_Payment_Block extends AbstractPaymentMethodType {
      */
     public function get_payment_method_data() {
         return [
-            'title'       => $this->get_setting( 'title' ),
-            'description' => $this->get_setting( 'description' ),
-            'is_required' => $this->get_setting( 'text_box_required' ),
-            'hide_text_box' => $this->get_setting( 'hide_text_box' ),
+            'title'       => $this->get_setting( 'title', 'SecPaid Secure Payment' ),
+            'description' => $this->get_setting( 'description', 'Pay securely with SecPaid' ),
             'supports'    => $this->get_supported_features(),
             'icons'       => $this->get_payment_method_icons(),
         ];
@@ -81,7 +71,7 @@ final class SecPaid_Payment_Block extends AbstractPaymentMethodType {
      *
      * @return array
      */
-    private function get_payment_method_icons() {
+    public function get_payment_method_icons() {
         $plugin_dir_url = plugin_dir_url(dirname(__FILE__));
         return [
             'PayPal' => $plugin_dir_url . 'resources/Paypal.png',
@@ -97,7 +87,7 @@ final class SecPaid_Payment_Block extends AbstractPaymentMethodType {
      *
      * @return array
      */
-    private function get_supported_features() {
+    public function get_supported_features() {
         return [
             'products',
             'refunds',
