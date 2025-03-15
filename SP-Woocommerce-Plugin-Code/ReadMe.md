@@ -1,4 +1,5 @@
-=== SecPaid WooCommerce Payment Gateway ===
+##SecPaid WooCommerce Payment Gateway
+
 Contributors: ala_eddin_eltai, secpaid_ltd
 Tags: woocommerce, payment gateway, woocommerce extension, secpaid, secure payments
 Requires at least: 4.0
