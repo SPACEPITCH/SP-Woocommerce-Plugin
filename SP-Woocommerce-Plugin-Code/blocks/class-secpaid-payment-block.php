@@ -1,4 +1,10 @@
 <?php
+/**
+ * SecPaid Payment Block Integration
+ *
+ * @package SecPaid_WooCommerce_Payment_Gateway
+ * @version 2.0
+ */
 
 use Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType;
 
@@ -9,7 +15,13 @@ use Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodTyp
  */
 final class SecPaid_Payment_Block extends AbstractPaymentMethodType {
 
+    /**
+     * Payment gateway instance
+     *
+     * @var WC_SecPaid_Payment_Gateway
+     */
     private $gateway;
+
     /**
      * Payment method name defined by payment methods extending this class.
      *
@@ -21,7 +33,9 @@ final class SecPaid_Payment_Block extends AbstractPaymentMethodType {
      * Initializes the payment method type.
      */
     public function initialize() {
-        $this->settings = get_option( "woocommerce_{$this->name}_settings", [] );
+        $this->settings = get_option("woocommerce_{$this->name}_settings", []);
+        $gateways = WC()->payment_gateways->payment_gateways();
+        $this->gateway = isset($gateways[$this->name]) ? $gateways[$this->name] : null;
     }
 
     /**
@@ -30,7 +44,7 @@ final class SecPaid_Payment_Block extends AbstractPaymentMethodType {
      * @return boolean
      */
     public function is_active() {
-        return ! empty( $this->settings[ 'enabled' ] ) && 'yes' === $this->settings[ 'enabled' ];
+        return !empty($this->settings['enabled']) && 'yes' === $this->settings['enabled'];
     }
 
     /**
@@ -41,15 +55,18 @@ final class SecPaid_Payment_Block extends AbstractPaymentMethodType {
      */
     public function get_payment_method_script_handles() {
         // Simple implementation that doesn't require build files
+        $asset_path = plugin_dir_path(__FILE__) . 'js/secpaid-payment-block.asset.php';
+        $version = file_exists($asset_path) ? require($asset_path)['version'] : '1.0.0';
+        
         wp_register_script(
-            'wc-secpaid-payment-integration',
-            plugins_url('js/secpaid-payment-block.js', dirname(__FILE__)),
-            array('wp-element', 'wp-components', 'wp-blocks', 'wp-i18n', 'wc-blocks-registry'),
-            '1.0.0',
+            'wc-secpaid-payment-blocks',
+            plugins_url('js/secpaid-payment-block.js', __FILE__),
+            ['wp-element', 'wp-components', 'wp-blocks', 'wp-i18n', 'wc-blocks-registry'],
+            $version,
             true
         );
 
-        return array( 'wc-secpaid-payment-integration' );
+        return ['wc-secpaid-payment-blocks'];
     }
 
     /**
@@ -59,26 +76,10 @@ final class SecPaid_Payment_Block extends AbstractPaymentMethodType {
      */
     public function get_payment_method_data() {
         return [
-            'title'       => $this->get_setting( 'title', 'SecPaid Secure Payment' ),
-            'description' => $this->get_setting( 'description', 'Pay securely with SecPaid' ),
-            'supports'    => $this->get_supported_features(),
-            'icons'       => $this->get_payment_method_icons(),
-        ];
-    }
-    
-    /**
-     * Returns an array of payment method icons.
-     *
-     * @return array
-     */
-    public function get_payment_method_icons() {
-        $plugin_dir_url = plugin_dir_url(dirname(__FILE__));
-        return [
-            'PayPal' => $plugin_dir_url . 'resources/Paypal.png',
-            'Visa' => $plugin_dir_url . 'resources/Visa.jpg',
-            'MasterCard' => $plugin_dir_url . 'resources/Mastercard.png',
-            'Apple Pay' => $plugin_dir_url . 'resources/ApplePay.png',
-            'Google Pay' => $plugin_dir_url . 'resources/Gpay.png'
+            'title' => $this->get_setting('title', 'SecPaid Secure Payment'),
+            'description' => $this->get_setting('description', 'Pay securely with SecPaid'),
+            'supports' => $this->get_supported_features(),
+            'icons' => $this->get_payment_method_icons(),
         ];
     }
     
@@ -92,5 +93,31 @@ final class SecPaid_Payment_Block extends AbstractPaymentMethodType {
             'products',
             'refunds',
         ];
+    }
+    
+    /**
+     * Returns an array of payment method icons.
+     *
+     * @return array
+     */
+    public function get_payment_method_icons() {
+        $plugin_dir_url = plugin_dir_url(dirname(__FILE__));
+        $icons = [];
+        
+        $payment_logos = [
+            'PayPal' => $plugin_dir_url . 'resources/Paypal.png',
+            'Visa' => $plugin_dir_url . 'resources/Visa.jpg',
+            'MasterCard' => $plugin_dir_url . 'resources/Mastercard.png',
+            'Apple Pay' => $plugin_dir_url . 'resources/ApplePay.png',
+            'Google Pay' => $plugin_dir_url . 'resources/Gpay.png'
+        ];
+        
+        foreach ($payment_logos as $name => $url) {
+            if (file_exists(plugin_dir_path(dirname(__FILE__)) . 'resources/' . basename($url))) {
+                $icons[$name] = $url;
+            }
+        }
+        
+        return $icons;
     }
 }
