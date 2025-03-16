@@ -48,25 +48,7 @@ function init_wc_secpaid_payment_gateway() {
                 add_action('admin_head', array($this, 'fix_save_button'));
             }
             
-            // Fix for the Save button being hidden
-            public function fix_save_button() {
-                if (isset($_GET['page']) && $_GET['page'] === 'wc-settings' && 
-                    isset($_GET['tab']) && $_GET['tab'] === 'checkout' && 
-                    isset($_GET['section']) && $_GET['section'] === $this->id) {
-                    echo '<style>
-                        .woocommerce-save-button.disabled {
-                            opacity: 1 !important;
-                            pointer-events: auto !important;
-                        }
-                    </style>';
-                    
-                    echo '<script>
-                        jQuery(document).ready(function($) {
-                            $(".woocommerce-save-button.disabled").removeClass("disabled");
-                        });
-                    </script>';
-                }
-            }
+
             
             public function init_form_fields() {
                 $this->form_fields = array(
@@ -117,39 +99,234 @@ function init_wc_secpaid_payment_gateway() {
             }
             
             public function admin_options() {
+                $logo_url = plugin_dir_url(__FILE__) . 'resources/secpaid-logo.png';
                 ?>
-                <h3><?php _e('SecPaid Payment Settings', 'woocommerce-secpaid-payment-gateway'); ?></h3>
-                <div id="poststuff">
-                    <div id="post-body" class="metabox-holder columns-2">
-                        <div id="post-body-content">
+                <div class="secpaid-admin-header">
+                    <img src="<?php echo esc_url($logo_url); ?>" alt="SecPaid Logo" class="secpaid-logo">
+                    <h2><?php _e('SecPaid Payment Settings', 'woocommerce-secpaid-payment-gateway'); ?></h2>
+                </div>
+                
+                <div id="secpaid-settings-container">
+                    <div id="secpaid-settings-main">
+                        <div class="secpaid-settings-section">
+                            <h3><?php _e('Gateway Configuration', 'woocommerce-secpaid-payment-gateway'); ?></h3>
+                            <p class="secpaid-description"><?php _e('Configure your SecPaid payment gateway settings below to start accepting payments.', 'woocommerce-secpaid-payment-gateway'); ?></p>
                             <table class="form-table">
                                 <?php $this->generate_settings_html(); ?>
                             </table>
                         </div>
-                        <div id="postbox-container-1">
-                            <div class="postbox">
-                                <h3 class="hndle"><span><?php _e('SecPaid - Secure Payment Solutions', 'woocommerce-secpaid-payment-gateway'); ?></span></h3>
-                                <div class="inside">
-                                    <ul>
-                                        <li>Payment Service Provider</li>
-                                        <li>Split-Payments</li>
-                                        <li>WebShop Integration</li>
-                                        <li>Many Payment options</li>
-                                        <li>Advanced API Requests</li>
-                                        <li>Easy Payment Notification</li>
-                                        <li>Tax Reports</li>
-                                        <li>Refunds & Dispute Management</li>
-                                        <li>Priority Support</li>
-                                    </ul>
-                                    <a href="https://docs.secpaid.com" class="button" target="_blank"><?php _e('Documentation', 'woocommerce-secpaid-payment-gateway'); ?></a>
-                                </div>
+                    </div>
+                    
+                    <div id="secpaid-settings-sidebar">
+                        <div class="secpaid-sidebar-box">
+                            <h3><?php _e('SecPaid - Secure Payment Solutions', 'woocommerce-secpaid-payment-gateway'); ?></h3>
+                            <div class="secpaid-features">
+                                <ul>
+                                    <li><span class="dashicons dashicons-yes"></span> Payment Service Provider</li>
+                                    <li><span class="dashicons dashicons-yes"></span> Split-Payments</li>
+                                    <li><span class="dashicons dashicons-yes"></span> WebShop Integration</li>
+                                    <li><span class="dashicons dashicons-yes"></span> Many Payment options</li>
+                                    <li><span class="dashicons dashicons-yes"></span> Advanced API Requests</li>
+                                    <li><span class="dashicons dashicons-yes"></span> Easy Payment Notification</li>
+                                    <li><span class="dashicons dashicons-yes"></span> Tax Reports</li>
+                                    <li><span class="dashicons dashicons-yes"></span> Refunds & Dispute Management</li>
+                                    <li><span class="dashicons dashicons-yes"></span> Priority Support</li>
+                                </ul>
+                            </div>
+                            <div class="secpaid-actions">
+                                <a href="https://docs.secpaid.com" class="button button-primary" target="_blank"><?php _e('Documentation', 'woocommerce-secpaid-payment-gateway'); ?></a>
+                                <a href="https://secpaid.com/support" class="button" target="_blank"><?php _e('Get Support', 'woocommerce-secpaid-payment-gateway'); ?></a>
                             </div>
                         </div>
+                        
+                        <div class="secpaid-sidebar-box">
+                            <h3><?php _e('Need Help?', 'woocommerce-secpaid-payment-gateway'); ?></h3>
+                            <p><?php _e('If you need assistance setting up your payment gateway, please contact our support team.', 'woocommerce-secpaid-payment-gateway'); ?></p>
+                            <a href="mailto:support@secpaid.com" class="button"><?php _e('Contact Support', 'woocommerce-secpaid-payment-gateway'); ?></a>
+                        </div>
                     </div>
+                </div>
+                
+                <div id="secpaid-settings-footer">
+                    <!-- The save button will be moved here via JavaScript -->
                 </div>
                 <?php
             }
             
+            public function fix_save_button() {
+                if (isset($_GET['page']) && $_GET['page'] === 'wc-settings' &&
+                    isset($_GET['tab']) && $_GET['tab'] === 'checkout' &&
+                    isset($_GET['section']) && $_GET['section'] === $this->id) {
+                    ?>
+                    <style>
+                        /* Main container styling */
+                        #secpaid-settings-container {
+                            display: flex;
+                            gap: 20px;
+                            margin-top: 20px;
+                        }
+                        
+                        #secpaid-settings-main {
+                            flex: 1;
+                            min-width: 0;
+                        }
+                        
+                        #secpaid-settings-sidebar {
+                            width: 300px;
+                            flex-shrink: 0;
+                        }
+                        
+                        /* Header styling */
+                        .secpaid-admin-header {
+                            display: flex;
+                            align-items: center;
+                            margin-bottom: 20px;
+                            padding-bottom: 15px;
+                            border-bottom: 1px solid #e2e4e7;
+                        }
+                        
+                        .secpaid-logo {
+                            max-height: 50px;
+                            margin-right: 15px;
+                        }
+                        
+                        .secpaid-admin-header h2 {
+                            margin: 0;
+                            color: #23282d;
+                            font-size: 1.5em;
+                        }
+                        
+                        /* Section styling */
+                        .secpaid-settings-section {
+                            background: #fff;
+                            border: 1px solid #e2e4e7;
+                            border-radius: 4px;
+                            padding: 20px;
+                            margin-bottom: 20px;
+                            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+                        }
+                        
+                        .secpaid-settings-section h3 {
+                            margin-top: 0;
+                            padding-bottom: 10px;
+                            border-bottom: 1px solid #f0f0f1;
+                            color: #23282d;
+                        }
+                        
+                        .secpaid-description {
+                            color: #646970;
+                            font-size: 13px;
+                            margin-bottom: 20px;
+                        }
+                        
+                        /* Sidebar styling */
+                        .secpaid-sidebar-box {
+                            background: #fff;
+                            border: 1px solid #e2e4e7;
+                            border-radius: 4px;
+                            padding: 20px;
+                            margin-bottom: 20px;
+                            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+                        }
+                        
+                        .secpaid-sidebar-box h3 {
+                            margin-top: 0;
+                            padding-bottom: 10px;
+                            border-bottom: 1px solid #f0f0f1;
+                            color: #23282d;
+                        }
+                        
+                        .secpaid-features ul {
+                            margin: 0;
+                            padding: 0;
+                            list-style: none;
+                        }
+                        
+                        .secpaid-features li {
+                            padding: 8px 0;
+                            border-bottom: 1px solid #f0f0f1;
+                            display: flex;
+                            align-items: center;
+                        }
+                        
+                        .secpaid-features li:last-child {
+                            border-bottom: none;
+                        }
+                        
+                        .secpaid-features .dashicons {
+                            color: #2271b1;
+                            margin-right: 8px;
+                        }
+                        
+                        .secpaid-actions {
+                            margin-top: 15px;
+                            display: flex;
+                            gap: 10px;
+                        }
+                        
+                        /* Footer styling */
+                        #secpaid-settings-footer {
+                            margin-top: 20px;
+                            padding-top: 15px;
+                            border-top: 1px solid #e2e4e7;
+                        }
+                        
+                        /* Form styling */
+                        .form-table th {
+                            width: 200px;
+                            padding: 15px 10px 15px 0;
+                        }
+                        
+                        .form-table td {
+                            padding: 15px 10px;
+                        }
+                        
+                        /* Button styling */
+                        .woocommerce-save-button {
+                            background: #2271b1 !important;
+                            border-color: #2271b1 !important;
+                            color: #fff !important;
+                            font-weight: 500 !important;
+                            padding: 0 15px !important;
+                            height: 35px !important;
+                            line-height: 35px !important;
+                            text-shadow: none !important;
+                            box-shadow: none !important;
+                        }
+                        
+                        .woocommerce-save-button:hover {
+                            background: #135e96 !important;
+                            border-color: #135e96 !important;
+                        }
+                        
+                        .woocommerce-save-button.disabled {
+                            opacity: 1 !important;
+                            pointer-events: auto !important;
+                        }
+                        
+                        /* Hide the default submit button */
+                        p.submit {
+                            display: none;
+                        }
+                    </style>
+                    <script>
+                        jQuery(document).ready(function($) {
+                            // Remove disabled class from save button
+                            $(".woocommerce-save-button.disabled").removeClass("disabled");
+                            
+                            // Move the save button to our custom footer
+                            var saveButton = $(".woocommerce-save-button");
+                            saveButton.detach();
+                            $("#secpaid-settings-footer").append('<div class="submit"></div>');
+                            $("#secpaid-settings-footer .submit").append(saveButton);
+                            
+                            // Hide any other submit buttons that might be present
+                            $("#mainform > p.submit").hide();
+                        });
+                    </script>
+                    <?php
+                }
+            }
             public function validate_fields() {
                 if ($this->text_box_required === 'yes' && $this->hide_text_box !== 'yes') {
                     $textbox_value = isset($_POST['secpaid_payment-admin-note']) ? sanitize_textarea_field($_POST['secpaid_payment-admin-note']) : '';
@@ -361,23 +538,15 @@ function init_wc_secpaid_payment_gateway() {
             // CALLBACK HANDLING
             public function handle_callback() {
                 $logger = wc_get_logger();
-                // Log the full request URI and parameters
                 error_log('SecPaid callback received: ' . $_SERVER['REQUEST_URI']);
-                error_log('Query parameters before decoding: ' . print_r($_GET, true));
                 
                 // Decode the query string to fix HTML-encoded ampersands
                 $query_string = html_entity_decode($_SERVER['QUERY_STRING']);
                 parse_str($query_string, $query_params);
                 
-                // Log the decoded query parameters
-                error_log('Decoded query parameters: ' . print_r($query_params, true));
-                
                 // Get and sanitize parameters
                 $pay_id = isset($query_params['pay_id']) ? sanitize_text_field($query_params['pay_id']) : '';
                 $status = isset($query_params['status']) ? sanitize_text_field($query_params['status']) : '';
-                
-                // Log the extracted parameters
-                error_log('Extracted callback parameters: pay_id=' . $pay_id . ', status=' . $status);
                 
                 // Check for missing parameters
                 if (empty($pay_id) || empty($status)) {
@@ -385,12 +554,12 @@ function init_wc_secpaid_payment_gateway() {
                     wp_die('Missing required parameters', 'SecPaid Payment Error', ['response' => 400]);
                 }
                 
-                // Enhanced order lookup with error handling
+                // Find the order
                 $orders = wc_get_orders([
                     'meta_key' => '_secpaid_pay_id',
                     'meta_value' => $pay_id,
                     'limit' => 1,
-                    'status' => ['pending', 'on-hold', 'processing',  'failed'] // Added processing status
+                    'status' => ['pending', 'on-hold', 'processing', 'failed']
                 ]);
                 
                 if (empty($orders)) {
@@ -405,38 +574,53 @@ function init_wc_secpaid_payment_gateway() {
                 }
                 
                 if (empty($orders)) {
-                    error_log('No order found for pay_id: ' . $pay_id . '. Checked meta_key and order_key methods.');
+                    error_log('No order found for pay_id: ' . $pay_id);
                     wp_die('Invalid payment reference', 'SecPaid Payment Error', ['response' => 400]);
                 }
                 
                 $order = $orders[0];
                 error_log('Found matching order: Order ID=' . $order->get_id() . ', Status=' . $order->get_status());
                 
-                // Process callback based on status
-                switch ($status) {
-                    case 'success':
-                        $order->update_status('processing', __('Payment confirmed via SecPaid callback', 'woocommerce-secpaid-payment-gateway'));
+                // Only process if the order is still in pending status
+                // This prevents the callback from changing an order already processed by webhook
+                if ($order->get_status() === 'pending') {
+                    switch ($status) {
+                        case 'success':
+                            // Set to on-hold instead of processing to allow webhook to finalize
+                            $order->update_status('on-hold', __('Payment confirmed via SecPaid callback. Awaiting webhook confirmation.', 'woocommerce-secpaid-payment-gateway'));
+                            $order->update_meta_data('_secpaid_callback_received', 'yes');
+                            $order->update_meta_data('_secpaid_callback_time', current_time('mysql'));
+                            $order->save();
+                            $redirect_url = $order->get_checkout_order_received_url();
+                            break;
+                            
+                        case 'cancel':
+                            $order->update_status('failed', __('Payment cancelled via SecPaid callback', 'woocommerce-secpaid-payment-gateway'));
+                            $redirect_url = $order->get_checkout_payment_url();
+                            break;
+                            
+                        default:
+                            error_log('Unknown callback status received: ' . $status);
+                            wp_die('Invalid callback status', 'SecPaid Payment Error', ['response' => 400]);
+                    }
+                } else {
+                    error_log('Order already processed, not updating via callback: Order ID=' . $order->get_id() . ', Status=' . $order->get_status());
+                    // Still redirect the customer appropriately
+                    if ($status === 'success') {
                         $redirect_url = $order->get_checkout_order_received_url();
-                        break;
-                    case 'cancel':
-                        $order->update_status('failed', __('Payment cancelled via SecPaid callback', 'woocommerce-secpaid-payment-gateway'));
+                    } else {
                         $redirect_url = $order->get_checkout_payment_url();
-                        break;
-                    default:
-                        error_log('Unknown callback status received: ' . $status);
-                        wp_die('Invalid callback status', 'SecPaid Payment Error', ['response' => 400]);
+                    }
                 }
                 
                 error_log('Callback processing completed for Order ID=' . $order->get_id());
                 wp_redirect($redirect_url);
                 exit;
             }
-            
+
             public function handle_webhook() {
                 // Log request details
                 error_log('SecPaid webhook received: ' . $_SERVER['REQUEST_URI']);
-                error_log('Client IP: ' . $_SERVER['REMOTE_ADDR']);
-                error_log('User Agent: ' . ($_SERVER['HTTP_USER_AGENT'] ?? 'unknown'));
                 
                 // Get and log the raw payload
                 $payload = file_get_contents('php://input');
@@ -455,21 +639,18 @@ function init_wc_secpaid_payment_gateway() {
                     $pay_id = isset($data['data']['pay_id']) ? sanitize_text_field($data['data']['pay_id']) : '';
                     $status = isset($data['data']['status']) ? sanitize_text_field($data['data']['status']) : '';
                     
-                    // Log the extracted parameters
-                    error_log('Extracted webhook parameters: pay_id=' . $pay_id . ', status=' . $status);
-                    
                     // Check for missing parameters
                     if (empty($pay_id) || empty($status)) {
                         error_log('Missing required webhook parameters: pay_id=' . $pay_id . ', status=' . $status);
                         wp_die('Missing required parameters', 'SecPaid Webhook Error', ['response' => 400]);
                     }
                     
-                    // Enhanced order lookup with error handling
+                    // Find the order
                     $orders = wc_get_orders([
                         'meta_key' => '_secpaid_pay_id',
                         'meta_value' => $pay_id,
                         'limit' => 1,
-                        'status' => ['pending', 'on-hold', 'processing', 'completed']
+                        'status' => ['pending', 'on-hold', 'processing', 'completed', 'failed']
                     ]);
                     
                     if (empty($orders)) {
@@ -480,14 +661,33 @@ function init_wc_secpaid_payment_gateway() {
                     $order = $orders[0];
                     error_log('Found matching order: Order ID=' . $order->get_id() . ', Status=' . $order->get_status());
                     
-                    // Update order status based on webhook status
+                    // The webhook is the source of truth - it will update the order regardless of current status
+                    // This ensures payment confirmations are always processed
                     switch (strtolower($status)) {
                         case 'success':
-                            $order->update_status('processing', __('Payment confirmed via SecPaid webhook', 'woocommerce-secpaid-payment-gateway'));
+                            // Check if we've already processed this webhook
+                            $webhook_processed = $order->get_meta('_secpaid_webhook_processed');
+                            if ($webhook_processed !== 'yes') {
+                                $order->update_status('processing', __('Payment confirmed via SecPaid webhook', 'woocommerce-secpaid-payment-gateway'));
+                                $order->update_meta_data('_secpaid_webhook_processed', 'yes');
+                                $order->update_meta_data('_secpaid_webhook_time', current_time('mysql'));
+                                $order->save();
+                                error_log('Order status updated to processing via webhook: Order ID=' . $order->get_id());
+                            } else {
+                                error_log('Webhook already processed for this order: Order ID=' . $order->get_id());
+                            }
                             break;
+                            
                         case 'cancel':
-                            $order->update_status('failed', __('Payment cancelled via SecPaid webhook', 'woocommerce-secpaid-payment-gateway'));
+                            // Only update to failed if not already completed/processing
+                            if (!in_array($order->get_status(), ['processing', 'completed'])) {
+                                $order->update_status('failed', __('Payment cancelled via SecPaid webhook', 'woocommerce-secpaid-payment-gateway'));
+                                error_log('Order status updated to failed via webhook: Order ID=' . $order->get_id());
+                            } else {
+                                error_log('Not updating completed/processing order to failed: Order ID=' . $order->get_id());
+                            }
                             break;
+                            
                         default:
                             error_log('Unknown webhook status received: ' . $status);
                             wp_die('Invalid webhook status', 'SecPaid Webhook Error', ['response' => 400]);
@@ -500,7 +700,7 @@ function init_wc_secpaid_payment_gateway() {
                     wp_die('Webhook processing error', 'SecPaid Webhook Error', ['response' => 500]);
                 }
             }
-            
+                        
             private function handle_payment_completed($order, $data) {
                 error_log('[SecPaid Webhook] Handling payment completion for Order ID: ' . $order->get_id());
                 $transaction_id = isset($data['transaction_id']) ? $data['transaction_id'] : '';
