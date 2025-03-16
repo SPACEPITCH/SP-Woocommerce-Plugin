@@ -700,7 +700,7 @@ function init_wc_secpaid_payment_gateway() {
                             }
                             break;
                             
-                        case 'cancel':
+                        case 'Failed':
                             // Always set to failed for cancel webhooks
                             if ($current_status !== 'failed') {
                                 $order->update_status('failed', __('Payment cancelled via SecPaid webhook (overriding previous status)', 'woocommerce-secpaid-payment-gateway'));
