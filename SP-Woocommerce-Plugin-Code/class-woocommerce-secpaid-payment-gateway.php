@@ -631,7 +631,6 @@ function init_wc_secpaid_payment_gateway() {
                 wp_redirect($redirect_url);
                 exit;
             }
-
             public function handle_webhook() {
                 // Log request details
                 error_log('SecPaid webhook received: ' . $_SERVER['REQUEST_URI']);
@@ -689,30 +688,25 @@ function init_wc_secpaid_payment_gateway() {
                     }
                     
                     // Process webhook based on status - ALWAYS override callback
-                    switch (strtolower($status)) {
-                        case 'success':
-                            // Always set to processing for success webhooks
-                            if ($current_status !== 'processing') {
-                                $order->update_status('processing', __('Payment confirmed via SecPaid webhook (overriding previous status)', 'woocommerce-secpaid-payment-gateway'));
-                                error_log('Updated order status from ' . $current_status . ' to processing: Order ID=' . $order->get_id());
-                            } else {
-                                error_log('Order already in processing status: Order ID=' . $order->get_id());
-                            }
-                            break;
-                            
-                        case 'Failed':
-                            // Always set to failed for cancel webhooks
-                            if ($current_status !== 'failed') {
-                                $order->update_status('failed', __('Payment cancelled via SecPaid webhook (overriding previous status)', 'woocommerce-secpaid-payment-gateway'));
-                                error_log('Updated order status from ' . $current_status . ' to failed: Order ID=' . $order->get_id());
-                            } else {
-                                error_log('Order already in failed status: Order ID=' . $order->get_id());
-                            }
-                            break;
-                            
-                        default:
-                            error_log('Unknown webhook status received: ' . $status);
-                            wp_die('Invalid webhook status', 'SecPaid Webhook Error', ['response' => 400]);
+                    if ($status === 'success') {
+                        // Always set to processing for success webhooks
+                        if ($current_status !== 'processing') {
+                            $order->update_status('processing', __('Payment confirmed via SecPaid webhook (overriding previous status)', 'woocommerce-secpaid-payment-gateway'));
+                            error_log('Updated order status from ' . $current_status . ' to processing: Order ID=' . $order->get_id());
+                        } else {
+                            error_log('Order already in processing status: Order ID=' . $order->get_id());
+                        }
+                    } elseif ($status === 'Failed' || $status === 'cancel') {
+                        // Always set to failed for Failed or cancel webhooks
+                        if ($current_status !== 'failed') {
+                            $order->update_status('failed', __('Payment failed/cancelled via SecPaid webhook (overriding previous status)', 'woocommerce-secpaid-payment-gateway'));
+                            error_log('Updated order status from ' . $current_status . ' to failed: Order ID=' . $order->get_id());
+                        } else {
+                            error_log('Order already in failed status: Order ID=' . $order->get_id());
+                        }
+                    } else {
+                        error_log('Unknown webhook status received: ' . $status);
+                        wp_die('Invalid webhook status: ' . $status, 'SecPaid Webhook Error', ['response' => 400]);
                     }
                     
                     // Record webhook processing
