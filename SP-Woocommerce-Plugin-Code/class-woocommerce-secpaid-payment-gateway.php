@@ -536,17 +536,26 @@ function init_wc_secpaid_payment_gateway() {
             }
             
             // CALLBACK HANDLING
+            // CALLBACK HANDLING
             public function handle_callback() {
                 $logger = wc_get_logger();
+                // Log the full request URI and parameters
                 error_log('SecPaid callback received: ' . $_SERVER['REQUEST_URI']);
+                error_log('Query parameters before decoding: ' . print_r($_GET, true));
                 
                 // Decode the query string to fix HTML-encoded ampersands
                 $query_string = html_entity_decode($_SERVER['QUERY_STRING']);
                 parse_str($query_string, $query_params);
                 
+                // Log the decoded query parameters
+                error_log('Decoded query parameters: ' . print_r($query_params, true));
+                
                 // Get and sanitize parameters
                 $pay_id = isset($query_params['pay_id']) ? sanitize_text_field($query_params['pay_id']) : '';
                 $status = isset($query_params['status']) ? sanitize_text_field($query_params['status']) : '';
+                
+                // Log the extracted parameters
+                error_log('Extracted callback parameters: pay_id=' . $pay_id . ', status=' . $status);
                 
                 // Check for missing parameters
                 if (empty($pay_id) || empty($status)) {
@@ -554,7 +563,7 @@ function init_wc_secpaid_payment_gateway() {
                     wp_die('Missing required parameters', 'SecPaid Payment Error', ['response' => 400]);
                 }
                 
-                // Find the order
+                // Enhanced order lookup with error handling
                 $orders = wc_get_orders([
                     'meta_key' => '_secpaid_pay_id',
                     'meta_value' => $pay_id,
@@ -574,20 +583,19 @@ function init_wc_secpaid_payment_gateway() {
                 }
                 
                 if (empty($orders)) {
-                    error_log('No order found for pay_id: ' . $pay_id);
+                    error_log('No order found for pay_id: ' . $pay_id . '. Checked meta_key and order_key methods.');
                     wp_die('Invalid payment reference', 'SecPaid Payment Error', ['response' => 400]);
                 }
                 
                 $order = $orders[0];
                 error_log('Found matching order: Order ID=' . $order->get_id() . ', Status=' . $order->get_status());
                 
-                // Only process if the order is still in pending status
-                // This prevents the callback from changing an order already processed by webhook
+                // Process callback based on status and current order status
                 if ($order->get_status() === 'pending') {
+                    // Only update if order is still pending
                     switch ($status) {
                         case 'success':
-                            // Set to on-hold instead of processing to allow webhook to finalize
-                            $order->update_status('on-hold', __('Payment confirmed via SecPaid callback. Awaiting webhook confirmation.', 'woocommerce-secpaid-payment-gateway'));
+                            $order->update_status('on-hold', __('Payment confirmed via SecPaid callback', 'woocommerce-secpaid-payment-gateway'));
                             $order->update_meta_data('_secpaid_callback_received', 'yes');
                             $order->update_meta_data('_secpaid_callback_time', current_time('mysql'));
                             $order->save();
@@ -604,13 +612,9 @@ function init_wc_secpaid_payment_gateway() {
                             wp_die('Invalid callback status', 'SecPaid Payment Error', ['response' => 400]);
                     }
                 } else {
-                    error_log('Order already processed, not updating via callback: Order ID=' . $order->get_id() . ', Status=' . $order->get_status());
-                    // Still redirect the customer appropriately
-                    if ($status === 'success') {
-                        $redirect_url = $order->get_checkout_order_received_url();
-                    } else {
-                        $redirect_url = $order->get_checkout_payment_url();
-                    }
+                    // Order already processed, just redirect
+                    error_log('Order already processed (status: ' . $order->get_status() . '), not updating via callback');
+                    $redirect_url = ($status === 'success') ? $order->get_checkout_order_received_url() : $order->get_checkout_payment_url();
                 }
                 
                 error_log('Callback processing completed for Order ID=' . $order->get_id());
@@ -621,6 +625,8 @@ function init_wc_secpaid_payment_gateway() {
             public function handle_webhook() {
                 // Log request details
                 error_log('SecPaid webhook received: ' . $_SERVER['REQUEST_URI']);
+                error_log('Client IP: ' . $_SERVER['REMOTE_ADDR']);
+                error_log('User Agent: ' . ($_SERVER['HTTP_USER_AGENT'] ?? 'unknown'));
                 
                 // Get and log the raw payload
                 $payload = file_get_contents('php://input');
@@ -639,18 +645,21 @@ function init_wc_secpaid_payment_gateway() {
                     $pay_id = isset($data['data']['pay_id']) ? sanitize_text_field($data['data']['pay_id']) : '';
                     $status = isset($data['data']['status']) ? sanitize_text_field($data['data']['status']) : '';
                     
+                    // Log the extracted parameters
+                    error_log('Extracted webhook parameters: pay_id=' . $pay_id . ', status=' . $status);
+                    
                     // Check for missing parameters
                     if (empty($pay_id) || empty($status)) {
                         error_log('Missing required webhook parameters: pay_id=' . $pay_id . ', status=' . $status);
                         wp_die('Missing required parameters', 'SecPaid Webhook Error', ['response' => 400]);
                     }
                     
-                    // Find the order
+                    // Enhanced order lookup with error handling
                     $orders = wc_get_orders([
                         'meta_key' => '_secpaid_pay_id',
                         'meta_value' => $pay_id,
                         'limit' => 1,
-                        'status' => ['pending', 'on-hold', 'processing', 'completed', 'failed']
+                        'status' => ['pending', 'on-hold', 'processing', 'completed']
                     ]);
                     
                     if (empty($orders)) {
@@ -661,30 +670,43 @@ function init_wc_secpaid_payment_gateway() {
                     $order = $orders[0];
                     error_log('Found matching order: Order ID=' . $order->get_id() . ', Status=' . $order->get_status());
                     
-                    // The webhook is the source of truth - it will update the order regardless of current status
-                    // This ensures payment confirmations are always processed
+                    // Check if this webhook has been processed before
+                    $webhook_processed = $order->get_meta('_secpaid_webhook_processed');
+                    $webhook_time = $order->get_meta('_secpaid_webhook_time');
+                    
+                    // If webhook was already processed, log and exit
+                    if ($webhook_processed === 'yes' && !empty($webhook_time)) {
+                        error_log('Webhook already processed for this order on ' . $webhook_time);
+                        // Still update the metadata to record this attempt
+                        $order->update_meta_data('_secpaid_webhook_duplicate_time', current_time('mysql'));
+                        $order->save();
+                        wp_die('Webhook already processed', 'SecPaid Webhook', ['response' => 200]);
+                    }
+                    
+                    // Process webhook based on status and current order status
                     switch (strtolower($status)) {
                         case 'success':
-                            // Check if we've already processed this webhook
-                            $webhook_processed = $order->get_meta('_secpaid_webhook_processed');
-                            if ($webhook_processed !== 'yes') {
+                            // Update to processing if not already in a completed state
+                            if (in_array($order->get_status(), ['pending', 'on-hold'])) {
                                 $order->update_status('processing', __('Payment confirmed via SecPaid webhook', 'woocommerce-secpaid-payment-gateway'));
-                                $order->update_meta_data('_secpaid_webhook_processed', 'yes');
-                                $order->update_meta_data('_secpaid_webhook_time', current_time('mysql'));
-                                $order->save();
-                                error_log('Order status updated to processing via webhook: Order ID=' . $order->get_id());
+                                error_log('Updated order status to processing: Order ID=' . $order->get_id());
                             } else {
-                                error_log('Webhook already processed for this order: Order ID=' . $order->get_id());
+                                error_log('Order already in ' . $order->get_status() . ' status, not updating via webhook');
                             }
                             break;
                             
                         case 'cancel':
-                            // Only update to failed if not already completed/processing
-                            if (!in_array($order->get_status(), ['processing', 'completed'])) {
+                            // Only update to failed if not already in processing or completed
+                            if (in_array($order->get_status(), ['pending', 'on-hold'])) {
                                 $order->update_status('failed', __('Payment cancelled via SecPaid webhook', 'woocommerce-secpaid-payment-gateway'));
-                                error_log('Order status updated to failed via webhook: Order ID=' . $order->get_id());
+                                error_log('Updated order status to failed: Order ID=' . $order->get_id());
                             } else {
-                                error_log('Not updating completed/processing order to failed: Order ID=' . $order->get_id());
+                                error_log('Order already in ' . $order->get_status() . ' status, not updating to failed via webhook');
+                                // Add a note about the ignored cancel webhook
+                                $order->add_order_note(sprintf(
+                                    __('Ignored cancel webhook received after order was already %s', 'woocommerce-secpaid-payment-gateway'),
+                                    $order->get_status()
+                                ));
                             }
                             break;
                             
@@ -693,6 +715,12 @@ function init_wc_secpaid_payment_gateway() {
                             wp_die('Invalid webhook status', 'SecPaid Webhook Error', ['response' => 400]);
                     }
                     
+                    // Record webhook processing
+                    $order->update_meta_data('_secpaid_webhook_processed', 'yes');
+                    $order->update_meta_data('_secpaid_webhook_time', current_time('mysql'));
+                    $order->update_meta_data('_secpaid_webhook_status', $status);
+                    $order->save();
+                    
                     error_log('Webhook processing completed for Order ID=' . $order->get_id());
                     wp_die('Webhook processed successfully', 'SecPaid Webhook', ['response' => 200]);
                 } catch (Exception $e) {
@@ -700,7 +728,7 @@ function init_wc_secpaid_payment_gateway() {
                     wp_die('Webhook processing error', 'SecPaid Webhook Error', ['response' => 500]);
                 }
             }
-                        
+                                    
             private function handle_payment_completed($order, $data) {
                 error_log('[SecPaid Webhook] Handling payment completion for Order ID: ' . $order->get_id());
                 $transaction_id = isset($data['transaction_id']) ? $data['transaction_id'] : '';
