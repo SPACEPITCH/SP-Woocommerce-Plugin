@@ -688,7 +688,7 @@ function init_wc_secpaid_payment_gateway() {
                     }
                     
                     // Process webhook based on status - ALWAYS override callback
-                    if ($status === 'success') {
+                    if ($status === 'Success') {
                         // Always set to processing for success webhooks
                         if ($current_status !== 'processing') {
                             $order->update_status('processing', __('Payment confirmed via SecPaid webhook (overriding previous status)', 'woocommerce-secpaid-payment-gateway'));
