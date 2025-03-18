@@ -5,7 +5,6 @@ function init_wc_secpaid_payment_gateway() {
     if (!class_exists('WC_Payment_Gateway')) {
         return; // WooCommerce is not active.
     }
-    
     if (!class_exists('WC_SecPaid_Payment_Gateway')) {
         class WC_SecPaid_Payment_Gateway extends WC_Payment_Gateway {
             // Declare all properties to avoid PHP 8.2 deprecation warnings
@@ -15,40 +14,140 @@ function init_wc_secpaid_payment_gateway() {
             private $environment;
             private $api_key;
             private $additional_text;
-            
             // Constants for callback and webhook handling
             const CALLBACK_SLUG = 'secpaid-callback';
             const WEBHOOK_SLUG = 'secpaid-webhooks';
-            
             public function __construct() {
-                $this->id           = 'secpaid_payment';
+                $this->id = 'secpaid_payment';
                 $this->method_title = __('SecPaid | Secure Payments', 'woocommerce-secpaid-payment-gateway');
-                $this->title        = __('SecPaid | Secure Payments', 'woocommerce-secpaid-payment-gateway');
-                $this->has_fields   = true;
+                $this->title = __('SecPaid | Secure Payments', 'woocommerce-secpaid-payment-gateway');
+                $this->has_fields = true;
                 $this->init_form_fields();
                 $this->init_settings();
-                
                 // Load settings from admin
-                $this->enabled           = $this->get_option('enabled');
-                $this->title             = $this->get_option('title');
-                $this->description       = $this->get_option('description');
-                $this->hide_text_box     = $this->get_option('hide_text_box');
+                $this->enabled = $this->get_option('enabled');
+                $this->title = $this->get_option('title');
+                $this->description = $this->get_option('description');
+                $this->hide_text_box = $this->get_option('hide_text_box');
                 $this->text_box_required = $this->get_option('text_box_required');
-                $this->order_status      = $this->get_option('order_status');
-                $this->environment       = $this->get_option('environment', 'development');
-                $this->api_key           = $this->get_option('api_key');
-                $this->additional_text   = $this->get_option('additional_text');
-                
+                $this->order_status = $this->get_option('order_status');
+                $this->environment = $this->get_option('environment', 'development');
+                $this->api_key = $this->get_option('api_key');
+                $this->additional_text = $this->get_option('additional_text');
                 // Register endpoints for SecPaid callback and webhook.
                 add_action('woocommerce_api_' . self::CALLBACK_SLUG, array($this, 'handle_callback'));
                 add_action('woocommerce_api_' . self::WEBHOOK_SLUG, array($this, 'handle_webhook'));
                 add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
-                
                 // Fix for the Save button issue
                 add_action('admin_head', array($this, 'fix_save_button'));
+                
+                // Add mobile styles
+                add_action('wp_head', array($this, 'add_mobile_styles'));
             }
             
-
+            /**
+             * Add mobile-specific CSS styles
+             */
+            public function add_mobile_styles() {
+                ?>
+                <style>
+                    /* Mobile-specific styles for SecPaid payment gateway */
+                    @media only screen and (max-width: 767px) {
+                        /* Fix checkout form layout */
+                        .woocommerce-checkout .col2-set .col-1,
+                        .woocommerce-checkout .col2-set .col-2,
+                        .woocommerce form .form-row-first,
+                        .woocommerce form .form-row-last {
+                            float: none;
+                            width: 100%;
+                        }
+                        
+                        /* Fix payment method display */
+                        .woocommerce #payment ul.payment_methods li.payment_method_secpaid_payment {
+                            padding: 10px;
+                        }
+                        
+                        /* Fix payment logos display */
+                        .woocommerce #payment ul.payment_methods li.payment_method_secpaid_payment img {
+                            max-width: 40px;
+                            margin-right: 5px;
+                            margin-bottom: 5px;
+                            display: inline-block;
+                        }
+                        
+                        /* Fix payment button */
+                        .woocommerce #payment .button {
+                            width: 100%;
+                            padding: 12px;
+                            font-size: 16px;
+                            height: auto;
+                            line-height: 1.5;
+                        }
+                        
+                        /* Fix form fields */
+                        .woocommerce #payment input[type="text"],
+                        .woocommerce #payment textarea {
+                            width: 100%;
+                            padding: 10px;
+                            font-size: 16px; /* Prevents iOS zoom */
+                        }
+                        
+                        /* Fix checkout content box */
+                        .woocommerce .content-box {
+                            margin: 0;
+                            width: 100%;
+                            box-sizing: border-box;
+                        }
+                        
+                        /* Fix place order button */
+                        #place_order {
+                            width: 100%;
+                            padding: 15px;
+                            font-size: 16px;
+                            height: auto;
+                            line-height: 1.5;
+                        }
+                        
+                        /* Fix payment method selection */
+                        .woocommerce-checkout #payment ul.payment_methods li input {
+                            margin: 0 1em 0 0;
+                        }
+                        
+                        /* Fix payment method labels */
+                        .woocommerce-checkout #payment ul.payment_methods li label {
+                            line-height: 1.5;
+                            display: inline-block;
+                            width: 80%;
+                            vertical-align: middle;
+                        }
+                        
+                        /* Fix secpaid payment form */
+                        .secpaid-payment-form {
+                            padding: 10px;
+                        }
+                        
+                        /* Fix secpaid payment logos */
+                        .secpaid-payment-logos {
+                            display: flex;
+                            flex-wrap: wrap;
+                            justify-content: flex-start;
+                            align-items: center;
+                        }
+                        
+                        /* Fix checkout form spacing */
+                        .woocommerce-checkout #customer_details {
+                            margin-bottom: 20px;
+                        }
+                        
+                        /* Fix checkout form fields */
+                        .woocommerce form .form-row {
+                            padding: 3px;
+                            margin: 0 0 10px;
+                        }
+                    }
+                </style>
+                <?php
+            }
             
             public function init_form_fields() {
                 $this->form_fields = array(
@@ -105,7 +204,6 @@ function init_wc_secpaid_payment_gateway() {
                     <img src="<?php echo esc_url($logo_url); ?>" alt="SecPaid Logo" class="secpaid-logo">
                     <h2><?php _e('SecPaid Payment Settings', 'woocommerce-secpaid-payment-gateway'); ?></h2>
                 </div>
-                
                 <div id="secpaid-settings-container">
                     <div id="secpaid-settings-main">
                         <div class="secpaid-settings-section">
@@ -116,7 +214,6 @@ function init_wc_secpaid_payment_gateway() {
                             </table>
                         </div>
                     </div>
-                    
                     <div id="secpaid-settings-sidebar">
                         <div class="secpaid-sidebar-box">
                             <h3><?php _e('SecPaid - Secure Payment Solutions', 'woocommerce-secpaid-payment-gateway'); ?></h3>
@@ -138,7 +235,6 @@ function init_wc_secpaid_payment_gateway() {
                                 <a href="https://secpaid.com/support" class="button" target="_blank"><?php _e('Get Support', 'woocommerce-secpaid-payment-gateway'); ?></a>
                             </div>
                         </div>
-                        
                         <div class="secpaid-sidebar-box">
                             <h3><?php _e('Need Help?', 'woocommerce-secpaid-payment-gateway'); ?></h3>
                             <p><?php _e('If you need assistance setting up your payment gateway, please contact our support team.', 'woocommerce-secpaid-payment-gateway'); ?></p>
@@ -146,7 +242,6 @@ function init_wc_secpaid_payment_gateway() {
                         </div>
                     </div>
                 </div>
-                
                 <div id="secpaid-settings-footer">
                     <!-- The save button will be moved here via JavaScript -->
                 </div>
@@ -165,17 +260,14 @@ function init_wc_secpaid_payment_gateway() {
                             gap: 20px;
                             margin-top: 20px;
                         }
-                        
                         #secpaid-settings-main {
                             flex: 1;
                             min-width: 0;
                         }
-                        
                         #secpaid-settings-sidebar {
                             width: 300px;
                             flex-shrink: 0;
                         }
-                        
                         /* Header styling */
                         .secpaid-admin-header {
                             display: flex;
@@ -184,18 +276,15 @@ function init_wc_secpaid_payment_gateway() {
                             padding-bottom: 15px;
                             border-bottom: 1px solid #e2e4e7;
                         }
-                        
                         .secpaid-logo {
                             max-height: 50px;
                             margin-right: 15px;
                         }
-                        
                         .secpaid-admin-header h2 {
                             margin: 0;
                             color: #23282d;
                             font-size: 1.5em;
                         }
-                        
                         /* Section styling */
                         .secpaid-settings-section {
                             background: #fff;
@@ -205,20 +294,17 @@ function init_wc_secpaid_payment_gateway() {
                             margin-bottom: 20px;
                             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
                         }
-                        
                         .secpaid-settings-section h3 {
                             margin-top: 0;
                             padding-bottom: 10px;
                             border-bottom: 1px solid #f0f0f1;
                             color: #23282d;
                         }
-                        
                         .secpaid-description {
                             color: #646970;
                             font-size: 13px;
                             margin-bottom: 20px;
                         }
-                        
                         /* Sidebar styling */
                         .secpaid-sidebar-box {
                             background: #fff;
@@ -228,59 +314,49 @@ function init_wc_secpaid_payment_gateway() {
                             margin-bottom: 20px;
                             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
                         }
-                        
                         .secpaid-sidebar-box h3 {
                             margin-top: 0;
                             padding-bottom: 10px;
                             border-bottom: 1px solid #f0f0f1;
                             color: #23282d;
                         }
-                        
                         .secpaid-features ul {
                             margin: 0;
                             padding: 0;
                             list-style: none;
                         }
-                        
                         .secpaid-features li {
                             padding: 8px 0;
                             border-bottom: 1px solid #f0f0f1;
                             display: flex;
                             align-items: center;
                         }
-                        
                         .secpaid-features li:last-child {
                             border-bottom: none;
                         }
-                        
                         .secpaid-features .dashicons {
                             color: #2271b1;
                             margin-right: 8px;
                         }
-                        
                         .secpaid-actions {
                             margin-top: 15px;
                             display: flex;
                             gap: 10px;
                         }
-                        
                         /* Footer styling */
                         #secpaid-settings-footer {
                             margin-top: 20px;
                             padding-top: 15px;
                             border-top: 1px solid #e2e4e7;
                         }
-                        
                         /* Form styling */
                         .form-table th {
                             width: 200px;
                             padding: 15px 10px 15px 0;
                         }
-                        
                         .form-table td {
                             padding: 15px 10px;
                         }
-                        
                         /* Button styling */
                         .woocommerce-save-button {
                             background: #2271b1 !important;
@@ -293,17 +369,14 @@ function init_wc_secpaid_payment_gateway() {
                             text-shadow: none !important;
                             box-shadow: none !important;
                         }
-                        
                         .woocommerce-save-button:hover {
                             background: #135e96 !important;
                             border-color: #135e96 !important;
                         }
-                        
                         .woocommerce-save-button.disabled {
                             opacity: 1 !important;
                             pointer-events: auto !important;
                         }
-                        
                         /* Hide the default submit button */
                         p.submit {
                             display: none;
@@ -313,13 +386,11 @@ function init_wc_secpaid_payment_gateway() {
                         jQuery(document).ready(function($) {
                             // Remove disabled class from save button
                             $(".woocommerce-save-button.disabled").removeClass("disabled");
-                            
                             // Move the save button to our custom footer
                             var saveButton = $(".woocommerce-save-button");
                             saveButton.detach();
                             $("#secpaid-settings-footer").append('<div class="submit"></div>');
                             $("#secpaid-settings-footer .submit").append(saveButton);
-                            
                             // Hide any other submit buttons that might be present
                             $("#mainform > p.submit").hide();
                         });
@@ -327,6 +398,7 @@ function init_wc_secpaid_payment_gateway() {
                     <?php
                 }
             }
+            
             public function validate_fields() {
                 if ($this->text_box_required === 'yes' && $this->hide_text_box !== 'yes') {
                     $textbox_value = isset($_POST['secpaid_payment-admin-note']) ? sanitize_textarea_field($_POST['secpaid_payment-admin-note']) : '';
@@ -341,21 +413,27 @@ function init_wc_secpaid_payment_gateway() {
             }
             
             public function payment_fields() {
+                $is_mobile = wp_is_mobile();
                 ?>
-                <div style="margin-bottom: 10px;">
+                <div class="secpaid-payment-form" style="margin-bottom: 15px;">
                     <!-- Display the main payment gateway logo -->
                     <?php
                     $logo_url = $this->get_option('logo');
                     if (!empty($logo_url)) {
-                        echo '<img src="' . esc_url($logo_url) . '" alt="SecPaid Logo" style="max-width: 100px; margin-bottom: 10px;" />';
+                        echo '<img src="' . esc_url($logo_url) . '" alt="SecPaid Logo" style="max-width: ' . ($is_mobile ? '80px' : '100px') . '; margin-bottom: 10px;" />';
                     }
                     ?>
                     
                     <!-- Display the description -->
                     <p><?php echo wp_kses_post($this->description); ?></p>
                     
-                    <!-- Display additional payment method logos using local resources -->
-                    <div style="margin-top: 10px;">
+                    <!-- Display additional text if available -->
+                    <?php if (!empty($this->additional_text)): ?>
+                        <p class="secpaid-additional-text"><?php echo wp_kses_post($this->additional_text); ?></p>
+                    <?php endif; ?>
+                    
+                    <!-- Display payment method logos using local resources -->
+                    <div class="secpaid-payment-logos" style="margin-top: 10px; display: flex; flex-wrap: wrap; align-items: center;">
                         <?php
                         $plugin_dir_url = plugin_dir_url(__FILE__);
                         $payment_logos = [
@@ -366,9 +444,14 @@ function init_wc_secpaid_payment_gateway() {
                             'Google Pay' => $plugin_dir_url . 'resources/Gpay.png'
                         ];
                         
+                        // On mobile, limit to 3 logos to prevent overcrowding
+                        if ($is_mobile) {
+                            $payment_logos = array_slice($payment_logos, 0, 3, true);
+                        }
+                        
                         foreach ($payment_logos as $name => $url) {
                             if (file_exists(plugin_dir_path(__FILE__) . 'resources/' . basename($url))) {
-                                echo '<img src="' . esc_url($url) . '" alt="' . esc_attr($name) . ' Logo" style="max-width: 50px; margin-right: 5px;" />';
+                                echo '<img src="' . esc_url($url) . '" alt="' . esc_attr($name) . ' Logo" style="max-width: ' . ($is_mobile ? '40px' : '50px') . '; margin-right: 5px; margin-bottom: 5px;" />';
                             }
                         }
                         ?>
@@ -380,8 +463,13 @@ function init_wc_secpaid_payment_gateway() {
             public function process_payment($order_id) {
                 error_log('[SecPaid Payment] Starting payment processing for Order ID: ' . $order_id);
                 $order = wc_get_order($order_id);
+                
+                // Check if user is on mobile
+                $is_mobile = wp_is_mobile();
+                
                 // Update order to 'pending' when payment is initiated.
                 $order->update_status('pending', __('Awaiting payment via SecPaid', 'woocommerce-secpaid-payment-gateway'));
+                
                 // Generate payment link
                 $payment_link = $this->create_secpaid_link($order);
                 if (is_wp_error($payment_link)) {
@@ -393,11 +481,20 @@ function init_wc_secpaid_payment_gateway() {
                         'redirect' => wc_get_checkout_url()
                     );
                 }
-                // Save payment link and redirect
+                
+                // Save payment link and mobile status
                 $order->update_meta_data('_secpaid_payment_url', $payment_link);
+                $order->update_meta_data('_secpaid_is_mobile', $is_mobile ? 'yes' : 'no');
                 $order->save();
+                
                 // Empty cart
                 WC()->cart->empty_cart();
+                
+                // For mobile users, add a special parameter to the payment link
+                if ($is_mobile) {
+                    $payment_link = add_query_arg('mobile', '1', $payment_link);
+                }
+                
                 // Redirect to payment link
                 return array(
                     'result' => 'success',
@@ -425,16 +522,13 @@ function init_wc_secpaid_payment_gateway() {
                         'order_total' => $order->get_total()
                     )
                 );
-                
                 $api_key = $this->get_option('api_key');
                 $endpoint = $this->get_api_endpoint(); // Use the environment-based endpoint
-                
                 // Prepare request parameters
                 $request_params = array(
                     'amount' => number_format($order->get_total(), 2, '.', ''),
                     'recipient_note' => 'Order #' . $order->get_id()
                 );
-                
                 $logger->debug(
                     'Payment request parameters',
                     array(
@@ -442,7 +536,6 @@ function init_wc_secpaid_payment_gateway() {
                         'params' => $request_params
                     )
                 );
-                
                 $headers = array(
                     'token' => $api_key,
                     'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
@@ -450,7 +543,6 @@ function init_wc_secpaid_payment_gateway() {
                     'Origin' => site_url(),
                     'Referer' => $order->get_checkout_order_received_url(),
                 );
-                
                 $args = array(
                     'headers' => $headers,
                     'body' => $request_params,
@@ -458,7 +550,6 @@ function init_wc_secpaid_payment_gateway() {
                     'sslverify' => false,
                     'reject_unsafe_urls' => false,
                 );
-                
                 $logger->debug(
                     'API request configuration',
                     array(
@@ -468,13 +559,11 @@ function init_wc_secpaid_payment_gateway() {
                         'args' => $args
                     )
                 );
-                
                 try {
                     $response = wp_remote_post($endpoint, $args);
                     $status_code = wp_remote_retrieve_response_code($response);
                     $response_body = wp_remote_retrieve_body($response);
                     $response_headers = wp_remote_retrieve_headers($response);
-                    
                     $logger->info(
                         'API response received',
                         array(
@@ -484,32 +573,25 @@ function init_wc_secpaid_payment_gateway() {
                             'response_headers' => $response_headers
                         )
                     );
-                    
                     if (is_wp_error($response)) {
                         throw new Exception($response->get_error_message());
                     }
-                    
                     if ($status_code !== 200) {
                         throw new Exception(sprintf(
                             'API request failed with status code %d',
                             $status_code
                         ));
                     }
-                    
                     $body = json_decode($response_body, true);
-                    
                     // Correctly access the pay_link and pay_id from the response
                     if (!isset($body['data']['pay_link']) || !isset($body['data']['id'])) {
                         throw new Exception('Invalid API response structure');
                     }
-                    
                     $payment_url = esc_url_raw($body['data']['pay_link']);
                     $pay_id = $body['data']['id']; // Use 'id' as the pay_id
-                    
                     // Store the SecPaid-generated pay_id
                     $order->update_meta_data('_secpaid_pay_id', $pay_id);
                     $order->save();
-                    
                     $logger->info(
                         'Payment link generated and pay_id stored',
                         array(
@@ -519,7 +601,6 @@ function init_wc_secpaid_payment_gateway() {
                             'order_id' => $order->get_id()
                         )
                     );
-                    
                     return $payment_url;
                 } catch (Exception $e) {
                     $logger->error(
@@ -537,6 +618,13 @@ function init_wc_secpaid_payment_gateway() {
             
             public function handle_callback() {
                 $logger = wc_get_logger();
+                
+                // Check if this is a mobile session
+                $is_mobile = isset($_GET['mobile']) ? true : wp_is_mobile();
+                
+                // Log mobile status
+                error_log('SecPaid callback received on ' . ($is_mobile ? 'mobile' : 'desktop') . ' device');
+                
                 // Log the full request URI and parameters
                 error_log('SecPaid callback received: ' . $_SERVER['REQUEST_URI']);
                 error_log('Query parameters before decoding: ' . print_r($_GET, true));
@@ -590,7 +678,6 @@ function init_wc_secpaid_payment_gateway() {
                 
                 // Check if a webhook has already processed this order
                 $webhook_processed = $order->get_meta('_secpaid_webhook_processed');
-                
                 if ($webhook_processed === 'yes') {
                     // Webhook has already processed this order - do not change status
                     error_log('Webhook has already processed this order. Callback will not change status.');
@@ -609,7 +696,6 @@ function init_wc_secpaid_payment_gateway() {
                             $order->update_meta_data('_secpaid_callback_status', $status);
                             $order->save();
                             break;
-                            
                         case 'cancel':
                             $order->update_status('cancelled', __('Payment cancelled via SecPaid callback', 'woocommerce-secpaid-payment-gateway'));
                             $order->update_meta_data('_secpaid_callback_received', 'yes');
@@ -617,7 +703,6 @@ function init_wc_secpaid_payment_gateway() {
                             $order->update_meta_data('_secpaid_callback_status', $status);
                             $order->save();
                             break;
-                            
                         default:
                             error_log('Unknown callback status received: ' . $status);
                             wp_die('Invalid callback status', 'SecPaid Payment Error', ['response' => 400]);
@@ -627,10 +712,16 @@ function init_wc_secpaid_payment_gateway() {
                 // Always redirect the customer appropriately
                 $redirect_url = ($status === 'success') ? $order->get_checkout_order_received_url() : $order->get_checkout_payment_url();
                 
-                error_log('Callback processing completed for Order ID=' . $order->get_id());
+                // For mobile users, add a special parameter to the redirect URL
+                if ($is_mobile) {
+                    $redirect_url = add_query_arg('mobile', '1', $redirect_url);
+                }
+                
+                error_log('Callback processing completed for Order ID=' . $order->get_id() . ', redirecting to: ' . $redirect_url);
                 wp_redirect($redirect_url);
                 exit;
             }
+            
             public function handle_webhook() {
                 // Log request details
                 error_log('SecPaid webhook received: ' . $_SERVER['REQUEST_URI']);
@@ -682,7 +773,6 @@ function init_wc_secpaid_payment_gateway() {
                     // Check if callback was received
                     $callback_received = $order->get_meta('_secpaid_callback_received');
                     $callback_status = $order->get_meta('_secpaid_callback_status');
-                    
                     if ($callback_received === 'yes') {
                         error_log('Callback was previously received with status: ' . $callback_status);
                     }
@@ -722,7 +812,7 @@ function init_wc_secpaid_payment_gateway() {
                     wp_die('Webhook processing error', 'SecPaid Webhook Error', ['response' => 500]);
                 }
             }
-                                    
+            
             private function handle_payment_completed($order, $data) {
                 error_log('[SecPaid Webhook] Handling payment completion for Order ID: ' . $order->get_id());
                 $transaction_id = isset($data['transaction_id']) ? $data['transaction_id'] : '';
@@ -751,8 +841,23 @@ function init_wc_secpaid_payment_gateway() {
                     WC_Admin_Settings::add_error(__('API Key is required for SecPaid payments to work correctly.', 'woocommerce-secpaid-payment-gateway'));
                     return '';
                 }
-                
                 return $value;
+            }
+            
+            /**
+             * Log mobile-specific checkout issues
+             */
+            private function log_mobile_checkout_issue($message, $data = []) {
+                if (!wp_is_mobile()) {
+                    return; // Only log mobile issues
+                }
+                
+                $logger = wc_get_logger();
+                $context = array_merge(['source' => 'secpaid_mobile_checkout'], $data);
+                $logger->error($message, $context);
+                
+                // Also log to PHP error log for immediate visibility
+                error_log('SecPaid Mobile Checkout Issue: ' . $message . ' - ' . json_encode($data));
             }
         } // End class WC_SecPaid_Payment_Gateway.
     }
@@ -821,6 +926,7 @@ function init_wc_secpaid_payment_gateway() {
                 
                 // Empty cart
                 WC()->cart->empty_cart();
+                
                 error_log('Order created: ' . $order->get_id());
                 
                 // Redirect
