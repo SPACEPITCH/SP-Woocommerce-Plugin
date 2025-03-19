@@ -1,11 +1,28 @@
 <?php
-require_once('/opt/bitnami/wordpress/wp-load.php');
+/**
+ * SecPaid WooCommerce Payment Gateway
+ * 
+ * This plugin provides integration with SecPaid payment services
+ */
+
+// Use WordPress' built-in functions to load WordPress
+if (!defined('ABSPATH')) {
+    if (file_exists(dirname(__FILE__) . '/../../../wp-load.php')) {
+        require_once(dirname(__FILE__) . '/../../../wp-load.php');
+    } elseif (file_exists(dirname(__FILE__) . '/../../wp-load.php')) {
+        require_once(dirname(__FILE__) . '/../../wp-load.php');
+    } else {
+        require_once(dirname(__FILE__) . '/../wp-load.php');
+    }
+}
+
+// Rest of your existing plugin code remains the same
 add_action('plugins_loaded', 'init_wc_secpaid_payment_gateway', 11);
+
 function init_wc_secpaid_payment_gateway() {
     if (!class_exists('WC_Payment_Gateway')) {
         return; // WooCommerce is not active.
     }
-    
     if (!class_exists('WC_SecPaid_Payment_Gateway')) {
         class WC_SecPaid_Payment_Gateway extends WC_Payment_Gateway {
             // Declare all properties to avoid PHP 8.2 deprecation warnings
